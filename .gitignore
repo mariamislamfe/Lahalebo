@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# raw source photos (the site uses the processed copies in /public)
+/Lahalebo Assets/
