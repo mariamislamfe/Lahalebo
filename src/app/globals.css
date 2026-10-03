@@ -1,26 +1,482 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ==========================================================================
+   LAHALEBO — DESIGN TOKENS
+   Visual DNA: HEAT. Orange light, red fire, the green chili stem,
+   and the chili silhouette from the logo. Food is always the hero.
+   ========================================================================== */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@theme {
+  /* Brand */
+  --color-chili: #d7201a; /* red: every ordering action. 5.1:1 on white */
+  --color-chili-hot: #ef3a22;
+  --color-chili-deep: #a8131a;
+  --color-chili-ink: #5c0a0c;
+  --color-orange: #f26a1b; /* the Lahalebo stage */
+  --color-orange-hot: #ff8a2a;
+  --color-ember: #ffb347; /* heat light */
+  --color-leaf: #1e7b3c; /* the chili stem */
+  --color-leaf-bright: #3fae4f;
+  --color-leaf-deep: #0f4a25;
+  --color-pistachio: #b9d98a; /* dessert scene only */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Neutrals (warm) */
+  --color-cream: #fff7ec;
+  --color-paper: #fbefde;
+  --color-sand: #efdcc2;
+  --color-smoke: #6f5b50;
+  --color-coal: #1c1311;
+  --color-coal-soft: #2b1e1a;
+  --color-tile: #f7a23a;
+
+  /* Type — Kufam (display) × IBM Plex Sans Arabic (text) */
+  --font-display: var(--font-kufam), "Kufam", system-ui, sans-serif;
+  --font-sans: var(--font-plex), "IBM Plex Sans Arabic", system-ui, sans-serif;
+
+  --text-mega: clamp(5.5rem, 24vw, 19rem); /* kinetic words behind food */
+  --text-mega--line-height: 0.82;
+  --text-display: clamp(3.4rem, 11vw, 8rem); /* headlines */
+  --text-display--line-height: 0.9;
+  --text-section: clamp(2.6rem, 7vw, 5.4rem);
+  --text-section--line-height: 0.95;
+  --text-dish: clamp(1.7rem, 3.2vw, 2.6rem); /* product names */
+  --text-dish--line-height: 1;
+
+  --radius-card: 1.5rem;
+  --radius-panel: 2rem;
+
+  --shadow-card: 0 1px 0 rgb(28 19 17 / 0.04), 0 14px 34px -20px rgb(92 10 12 / 0.45);
+  --shadow-pop: 0 24px 60px -24px rgb(28 19 17 / 0.5);
+  --shadow-cta: 0 12px 26px -10px rgb(215 32 26 / 0.75);
+  --shadow-object: 0 2px 3px rgb(60 20 5 / 0.25), 0 26px 44px -16px rgb(60 20 5 / 0.5);
+
+  /* MOTION SYSTEM
+     fast   (180ms) buttons, taps, cart count      → --ease-snap
+     medium (500ms) product entrances, sheets      → --ease-food
+     slow   (900ms) cinematic, hero reveals        → --ease-food
+     scroll          large scene changes — scrubbed to the scrollbar, no durations.
+     Weight: savory dishes settle heavy (overshoot + small rebound);
+             desserts land light (soft, bouncier). */
+  --ease-food: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-snap: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-calm: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-chili: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --animate-shimmer: shimmer 1.4s linear infinite;
+  --animate-bump: bump 420ms var(--ease-snap);
+  --animate-flag: flag-in 520ms var(--ease-snap) both;
+
+  @keyframes shimmer {
+    to {
+      background-position: -200% 0;
+    }
+  }
+  @keyframes bump {
+    40% {
+      transform: scale(1.22) rotate(-6deg);
+    }
+  }
+  @keyframes flag-in {
+    from {
+      transform: scale(0.4) rotate(-14deg);
+      opacity: 0;
+    }
   }
 }
 
+:root {
+  --nav-h: 4rem;
+  --tabs-h: 3.5rem;
+  color-scheme: light;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --nav-h: 4.75rem;
+  }
+}
+
+html {
+  scroll-padding-top: var(--nav-h);
+  -webkit-tap-highlight-color: transparent;
+  text-size-adjust: 100%;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-cream);
+  color: var(--color-coal);
+  font-family: var(--font-sans);
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--color-chili);
+  color: var(--color-cream);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-leaf-bright);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ---------- Utilities ---------- */
+
+@utility container-site {
+  width: 100%;
+  max-width: 84rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @media (min-width: 640px) {
+    padding-inline: 1.5rem;
+  }
+  @media (min-width: 1280px) {
+    padding-inline: 2.5rem;
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+@utility skeleton {
+  background: linear-gradient(90deg, var(--color-sand) 25%, var(--color-paper) 50%, var(--color-sand) 75%);
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+}
+
+/* Orange floor tiles from Lahalebo's own photo sets (table surface). */
+@utility surface-tiles {
+  background-color: var(--color-tile);
+  background-image:
+    linear-gradient(90deg, rgb(255 244 225 / 0.55) 2px, transparent 2px),
+    linear-gradient(0deg, rgb(255 244 225 / 0.55) 2px, transparent 2px);
+  background-size: var(--tile, 72px) var(--tile, 72px);
+}
+
+/* Heat light: a hot core that food sits in. */
+@utility heat-light {
+  background: radial-gradient(closest-side, rgb(255 214 120 / 0.95), rgb(255 138 42 / 0.55) 45%, transparent 75%);
+}
+
+/* ---------- Reveal (JS adds .js to <html>; no-JS users see everything) ---------- */
+
+.js [data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 36px, 0) scale(0.98);
+  transition:
+    opacity 500ms var(--ease-food),
+    transform 900ms var(--ease-food);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.js [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- Motion OFF (visitor's choice — see lib/motion-pref) ----------
+   The OS "reduce motion" setting maps to CALM, not to this: calm keeps the
+   scroll story (visitor-driven) and only drops autonomous extras in JS. */
+
+html[data-motion="off"] *,
+html[data-motion="off"] *::before,
+html[data-motion="off"] *::after {
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 1ms !important;
+}
+html[data-motion="off"] [data-reveal] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Dish fields: a flat brand colour with a warm light where the food sits. */
+@utility surface-orange {
+  background: radial-gradient(70% 60% at 50% 45%, rgb(255 190 90 / 0.9), transparent 70%), var(--color-orange);
+}
+@utility surface-red {
+  background: radial-gradient(70% 60% at 50% 55%, rgb(255 120 60 / 0.85), transparent 70%), var(--color-chili);
+}
+@utility surface-leaf {
+  background: radial-gradient(70% 60% at 50% 45%, rgb(160 220 120 / 0.55), transparent 70%), var(--color-leaf);
+}
+@utility surface-cream {
+  background: radial-gradient(70% 60% at 50% 45%, rgb(255 255 255 / 0.9), transparent 70%), var(--color-paper);
+}
+
+/* Price flags snap on when their card arrives (fast/snap motion). */
+.js [data-reveal] .flag-snap {
+  opacity: 0;
+}
+.js [data-reveal].is-in .flag-snap {
+  opacity: 1;
+  animation: var(--animate-flag);
+  animation-delay: 280ms;
+}
+
+/* Idle steam over the resting hero bowl (full motion only). */
+@keyframes steam-idle {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 12%, 0) scale(0.7);
+  }
+  30% {
+    opacity: var(--steam-max, 0.6);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--drift, 8%), -70%, 0) scale(1.35);
+  }
+}
+@utility animate-steam-idle {
+  animation: steam-idle var(--dur, 6s) var(--ease-calm) infinite;
+}
+@keyframes cue {
+  50% {
+    transform: translateY(6px);
+  }
+}
+@utility animate-cue {
+  animation: cue 1.6s var(--ease-calm) infinite;
+}
+
+/* Cart reacts when food lands in it (fast motion). */
+@keyframes cart-hit {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgb(215 32 26 / 0.5);
+  }
+  25% {
+    transform: scale(1.14) rotate(-8deg);
+  }
+  45% {
+    transform: scale(1.06) rotate(6deg);
+    box-shadow: 0 0 0 8px rgb(215 32 26 / 0.18);
+  }
+  65% {
+    transform: scale(1.02) rotate(-3deg);
+  }
+  100% {
+    transform: none;
+    box-shadow: 0 0 0 14px rgb(215 32 26 / 0);
+  }
+}
+@utility animate-cart-hit {
+  animation: cart-hit 520ms var(--ease-snap);
+}
+/* The thumbnail of what you just added peeks out under the cart. */
+@keyframes peek {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.5);
+  }
+  14% {
+    opacity: 1;
+    transform: translateY(0) scale(1.08);
+  }
+  22% {
+    transform: translateY(0) scale(1);
+  }
+  82% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.8);
+  }
+}
+@utility animate-peek {
+  animation: peek 1600ms var(--ease-calm) both;
+}
+
+/* =========================================================================
+   HERO ENTRANCE — pure CSS so it starts at first paint (no wait for JS).
+   whoosh → impact (0.6s) → overshoot → settle; pieces land 0.3–0.7s;
+   words rise 0.55–1.0s. Motion "off" collapses durations → settled poster.
+   ========================================================================= */
+@keyframes hero-whoosh {
+  0% {
+    transform: translateX(140%) rotate(22deg) scale(0.62);
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.35);
+  }
+  10% {
+    opacity: 1;
+  }
+  58% {
+    transform: translateX(-4%) rotate(-7deg) scale(1.05);
+    animation-timing-function: cubic-bezier(0.2, 0.9, 0.35, 1);
+  }
+  82% {
+    transform: translateX(1.5%) rotate(2deg) scale(0.99);
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes hero-land {
+  from {
+    transform: translate(var(--fx), var(--fy)) rotate(var(--fr)) scale(0.4);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(var(--rot)) scale(1);
+    opacity: 1;
+  }
+}
+@keyframes hero-jolt {
+  20% {
+    transform: translate(-7px, 3px);
+  }
+  45% {
+    transform: translate(6px, -2px);
+  }
+  70% {
+    transform: translate(-3px, 0);
+  }
+}
+@keyframes hero-rise {
+  from {
+    transform: translateY(140%);
+  }
+}
+@keyframes hero-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.7) rotate(var(--pr, 0deg));
+  }
+}
+@keyframes hero-slide {
+  from {
+    opacity: 0;
+    transform: translateX(14%);
+  }
+}
+@keyframes hero-speed {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  35% {
+    transform: scaleX(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+}
+@keyframes hero-burst {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.4);
+  }
+  30% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-55%) scale(1.6);
+  }
+}
+@utility hero-bowl {
+  animation: hero-whoosh 0.85s 0.1s both;
+}
+@utility hero-piece {
+  transform: rotate(var(--rot));
+  animation: hero-land 0.5s var(--d) cubic-bezier(0.22, 1.25, 0.36, 1) both;
+}
+@utility hero-jolt {
+  animation: hero-jolt 0.28s 0.6s ease-out both;
+}
+@utility hero-rise {
+  animation: hero-rise 0.5s var(--d) cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@utility hero-pop {
+  animation: hero-pop 0.35s var(--d) cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@utility hero-slide {
+  animation: hero-slide 0.4s var(--d) cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@utility hero-speed {
+  transform-origin: left;
+  animation: hero-speed 0.55s var(--d) ease-out both;
+}
+@utility hero-burst {
+  animation: hero-burst 1s var(--d) ease-out both;
+}
+
+/* Lenis (smooth scroll) base. Native chaining is kept on purpose (tablet menu → page). */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+/* «لهاليبو» on fire: the glow breathes like a flame (full motion only). */
+@keyframes flame {
+  0%,
+  100% {
+    text-shadow:
+      0 0 18px rgb(255 214 110 / 0.95),
+      0 0 46px rgb(255 120 30 / 0.85),
+      0 0 90px rgb(215 32 26 / 0.7),
+      0 10px 0 rgb(92 10 12 / 0.35);
+  }
+  35% {
+    text-shadow:
+      0 -2px 24px rgb(255 226 130 / 1),
+      0 -4px 60px rgb(255 140 40 / 0.95),
+      0 -6px 120px rgb(215 32 26 / 0.8),
+      0 10px 0 rgb(92 10 12 / 0.35);
+  }
+  65% {
+    text-shadow:
+      0 0 14px rgb(255 200 90 / 0.85),
+      0 -2px 40px rgb(255 110 25 / 0.8),
+      0 0 80px rgb(200 25 20 / 0.65),
+      0 10px 0 rgb(92 10 12 / 0.35);
+  }
+}
+@utility text-fire {
+  color: #fff4dc;
+  text-shadow:
+    0 0 18px rgb(255 214 110 / 0.95),
+    0 0 46px rgb(255 120 30 / 0.85),
+    0 0 90px rgb(215 32 26 / 0.7),
+    0 10px 0 rgb(92 10 12 / 0.35);
+}
+@utility animate-flame {
+  animation: flame 2.4s ease-in-out infinite;
+}
+
+/* «لهاليبو» as a street sign: solid cream face, deep-red 3D extrusion, no glow. */
+@utility text-sign {
+  color: var(--color-cream);
+  text-shadow:
+    1px 1px 0 var(--color-chili-deep),
+    2px 2px 0 var(--color-chili-deep),
+    3px 3px 0 var(--color-chili-deep),
+    4px 4px 0 var(--color-chili-deep),
+    5px 5px 0 var(--color-chili-deep),
+    6px 6px 0 var(--color-chili-ink),
+    7px 7px 0 var(--color-chili-ink),
+    8px 8px 0 var(--color-chili-ink),
+    9px 9px 0 var(--color-chili-ink),
+    10px 14px 18px rgb(60 6 8 / 0.35);
 }
