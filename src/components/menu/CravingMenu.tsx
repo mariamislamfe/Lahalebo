@@ -7,7 +7,6 @@ import type { Category, Product, Surface } from "@/types/menu";
 import { cn, formatNumber, itemsLabel } from "@/lib/format";
 import { ORDER_ANCHOR, ORDER_EVENT, type OrderEventDetail } from "@/lib/order-nav";
 import { startingPrice } from "@/lib/pricing";
-import { scrollToElement } from "@/lib/smooth-scroll";
 import { useMenu } from "@/store/menu-context";
 import { useOpenProduct } from "@/store/product-sheet-context";
 import { AddControl } from "@/components/menu/AddControl";
@@ -81,12 +80,8 @@ export function CravingMenu() {
     [categories],
   );
 
-  const select = useCallback((id: string) => {
-    setCatId(id);
-    // bring the dishes back into view if the visitor had scrolled past them
-    const top = sectionRef.current?.getBoundingClientRect().top ?? 0;
-    if (sectionRef.current && top < -120) scrollToElement(sectionRef.current, document.documentElement.dataset.motion !== "off");
-  }, [setCatId]);
+  // Changing category never moves the page: the visitor stays exactly where they are.
+  const select = setCatId;
 
   // Requests from the hero / navbar: open on a craving.
   useEffect(() => {
@@ -174,8 +169,10 @@ export function CravingMenu() {
           </div>
 
           {/* ---------- the chosen category ---------- */}
-          <div id="menu-panel" role="tabpanel" aria-labelledby={`tab-${category.id}`} className="min-w-0">
-            <AnimatePresence mode="wait" initial={false} custom={dir}>
+          {/* popLayout: the old dishes leave while the new ones arrive, so the page
+              never gets shorter for a moment (which made the browser jump up). */}
+          <div id="menu-panel" role="tabpanel" aria-labelledby={`tab-${category.id}`} className="relative min-w-0">
+            <AnimatePresence mode="popLayout" initial={false} custom={dir}>
               <motion.div
                 key={category.id}
                 custom={dir}
