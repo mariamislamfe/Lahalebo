@@ -18,9 +18,9 @@ export function getLenis() {
 /** Scroll to an element; smooth via Lenis when active, native otherwise. */
 export function scrollToElement(el: HTMLElement, smooth = true) {
   if (instance) {
-    // land below the sticky navbar, like native scroll-padding does
-    const nav = document.querySelector("header")?.getBoundingClientRect().height ?? 0;
-    instance.scrollTo(el, { immediate: !smooth, duration: 1.6, offset: -nav });
+    // Lenis already honours <html>'s scroll-padding-top (= the navbar height),
+    // so no extra offset here — subtracting it again landed a navbar too high.
+    instance.scrollTo(el, { immediate: !smooth, duration: 1.6 });
     return;
   }
   el.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
