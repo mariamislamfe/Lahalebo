@@ -1,3 +1,5 @@
+import type { ProductImage } from "@/types/menu";
+
 /**
  * Business configuration.
  *
@@ -12,6 +14,13 @@ export const siteConfig = {
 
   /** Real sticker logo supplied by the client (trimmed copy of /public/logo.jpg). */
   logo: { src: "/brand/logo.png", width: 396, height: 165 },
+
+  /**
+   * TODO(client): the hero photo. Until it's supplied the hero shows an empty
+   * tilted white frame in its place. Put the file in /public and set e.g.
+   * { src: "/hero/koshary.png", alt: "علبة كشري لهاليبو", width: 1200, height: 900 }.
+   */
+  heroImage: null as ProductImage | null,
 
   contact: {
     /** Printed on Lahalebo packaging and posts. */

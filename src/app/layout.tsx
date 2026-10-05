@@ -1,23 +1,33 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans_Arabic, Kufam } from "next/font/google";
+import { Badeen_Display, Marhey, Readex_Pro } from "next/font/google";
 import { siteConfig } from "@/config/site";
 import { motionBootScript } from "@/lib/motion-pref";
 import "./globals.css";
 
 /**
- * Type system — its own identity, unrelated to Toma (Lalezar / Cairo / Ruqaa):
- * Kufam            = modern geometric Kufi with a street-sign edge. Loud display.
- * IBM Plex Sans AR = calm, very readable text for menus, prices and forms.
+ * Type system (see docs/creative-direction.md):
+ * Badeen Display = the shout. Heavy, blocky, Egyptian sign-painter energy. One weight only.
+ * Marhey         = the voice. Hand-painted and playful: dish names, the brand talking.
+ * Readex Pro     = the UI. Prices, buttons, forms — everything you must read fast.
  */
-const kufam = Kufam({
-  variable: "--font-kufam",
+const badeen = Badeen_Display({
+  variable: "--font-badeen",
   subsets: ["arabic", "latin"],
-  weight: ["700", "900"],
+  weight: "400",
+  display: "swap",
+  // no metric overrides exist for Badeen; it only sets big display words anyway
+  adjustFontFallback: false,
+});
+
+const marhey = Marhey({
+  variable: "--font-marhey",
+  subsets: ["arabic", "latin"],
+  weight: ["500", "700"],
   display: "swap",
 });
 
-const plex = IBM_Plex_Sans_Arabic({
-  variable: "--font-plex",
+const readex = Readex_Pro({
+  variable: "--font-readex",
   subsets: ["arabic", "latin"],
   weight: ["400", "500", "700"],
   display: "swap",
@@ -26,7 +36,7 @@ const plex = IBM_Plex_Sans_Arabic({
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.name} كشري | جعان؟ يلا نطلب`,
+    default: `${siteConfig.name} كشري | مش عارف تاكل إيه؟`,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
@@ -37,7 +47,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ar_EG",
     siteName: siteConfig.name,
-    title: `${siteConfig.name} كشري | جعان؟ يلا نطلب`,
+    title: `${siteConfig.name} كشري | مش عارف تاكل إيه؟`,
     description: siteConfig.description,
     url: "/",
   },
@@ -72,7 +82,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ar" dir="rtl" suppressHydrationWarning className={`${kufam.variable} ${plex.variable} antialiased`}>
+    <html lang="ar" dir="rtl" suppressHydrationWarning className={`${badeen.variable} ${marhey.variable} ${readex.variable} antialiased`}>
       <body className="min-h-dvh">
         {/* Before paint: enables reveal styles (JS only) and sets the motion mode.
             Lives in <body>, not <head>: antivirus/extensions (e.g. Kaspersky) inject

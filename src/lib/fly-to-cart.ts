@@ -1,10 +1,18 @@
+import type { ProductImage } from "@/types/menu";
+
 /**
- * The dish cutout flies from where you tapped into the visible cart target
- * ([data-cart-target]). Web Animations API, transform/opacity only;
- * skipped when motion is switched off.
+ * The dish flies from where you tapped into the visible cart target
+ * ([data-cart-target]) on an arc. Cutouts fly as they are; photos fly as a
+ * round die-cut sticker; things with no photo yet fly as a coloured dot
+ * (`color`). Web Animations API, transform/opacity only; skipped when motion
+ * is switched off.
  */
-export function flyToCart(src: string | undefined, from: HTMLElement | null | undefined) {
-  if (!src || !from || typeof window === "undefined") return;
+export function flyToCart(
+  image: Pick<ProductImage, "src" | "cutout"> | undefined,
+  from: HTMLElement | null | undefined,
+  color?: string,
+) {
+  if ((!image && !color) || !from || typeof window === "undefined") return;
   if (document.documentElement.dataset.motion === "off") return;
 
   const target = Array.from(document.querySelectorAll<HTMLElement>("[data-cart-target]")).find(
@@ -14,15 +22,19 @@ export function flyToCart(src: string | undefined, from: HTMLElement | null | un
 
   const a = from.getBoundingClientRect();
   const b = target.getBoundingClientRect();
-  const size = 88;
+  const size = image ? 88 : 46;
   const sx = a.left + a.width / 2 - size / 2;
   const sy = a.top + a.height / 2 - size / 2;
   const dx = b.left + b.width / 2 - size / 2 - sx;
   const dy = b.top + b.height / 2 - size / 2 - sy;
 
-  const img = document.createElement("img");
-  img.src = src;
-  img.alt = "";
+  const img = document.createElement(image ? "img" : "span");
+  if (image && img instanceof HTMLImageElement) {
+    // Same optimized variant next/image serves (256w is in the default imageSizes),
+    // never the multi-hundred-KB source file.
+    img.src = `/_next/image?url=${encodeURIComponent(image.src)}&w=256&q=75`;
+    img.alt = "";
+  }
   img.setAttribute("aria-hidden", "true");
   Object.assign(img.style, {
     position: "fixed",
@@ -30,7 +42,10 @@ export function flyToCart(src: string | undefined, from: HTMLElement | null | un
     top: `${sy}px`,
     width: `${size}px`,
     height: `${size}px`,
-    objectFit: "contain",
+    objectFit: image?.cutout ? "contain" : "cover",
+    borderRadius: image?.cutout ? "0" : "9999px",
+    border: image?.cutout ? "none" : "4px solid var(--color-cream)",
+    background: image ? "transparent" : color,
     zIndex: "70",
     pointerEvents: "none",
     filter: "drop-shadow(0 10px 10px rgb(60 20 5 / 0.35))",

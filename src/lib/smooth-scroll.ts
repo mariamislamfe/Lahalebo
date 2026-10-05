@@ -26,6 +26,15 @@ export function scrollToElement(el: HTMLElement, smooth = true) {
   el.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
 }
 
+/** Scroll to an absolute page offset; smooth via Lenis when active. */
+export function scrollToY(y: number, smooth = true) {
+  if (instance) {
+    instance.scrollTo(y, { immediate: !smooth, duration: 1.2 });
+    return;
+  }
+  window.scrollTo({ top: y, behavior: smooth ? "smooth" : "auto" });
+}
+
 export function lockScroll(locked: boolean) {
   if (!instance) return;
   if (locked) instance.stop();

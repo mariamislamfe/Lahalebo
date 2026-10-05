@@ -3,8 +3,10 @@
 import { useEffect, useRef, type CSSProperties, type ElementType, type ReactNode } from "react";
 
 /**
- * Soft scroll reveal. One shared IntersectionObserver for the page;
- * elements unobserve after entering so nothing runs once seen.
+ * Scroll reveal. One shared IntersectionObserver for the page; elements
+ * unobserve after entering so nothing runs once seen. Styles in globals.css:
+ *   data-reveal=""      swings up from a pivot below (the house motion)
+ *   data-reveal="mask"  unmasked bottom-up, the photo settles inside
  */
 
 let observer: IntersectionObserver | null = null;
@@ -25,14 +27,31 @@ function getObserver() {
   return observer;
 }
 
+/** Mounted once: observes every [data-reveal] on the page, including ones added later. */
+export function RevealObserver() {
+  useEffect(() => {
+    const obs = getObserver();
+    const scan = (root: ParentNode) => root.querySelectorAll("[data-reveal]:not(.is-in)").forEach((el) => obs.observe(el));
+    scan(document);
+    const mo = new MutationObserver((records) => {
+      for (const r of records) r.addedNodes.forEach((n) => n instanceof Element && (n.matches("[data-reveal]") ? obs.observe(n) : scan(n)));
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+    return () => mo.disconnect();
+  }, []);
+  return null;
+}
+
 export function Reveal({
   as: Tag = "div",
   delay = 0,
+  mask,
   className,
   children,
 }: {
   as?: ElementType;
   delay?: number;
+  mask?: boolean;
   className?: string;
   children: ReactNode;
 }) {
@@ -47,7 +66,7 @@ export function Reveal({
   }, []);
 
   return (
-    <Tag ref={ref} data-reveal="" className={className} style={{ "--reveal-delay": `${delay}ms` } as CSSProperties}>
+    <Tag ref={ref} data-reveal={mask ? "mask" : ""} className={className} style={{ "--reveal-delay": `${delay}ms` } as CSSProperties}>
       {children}
     </Tag>
   );

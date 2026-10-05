@@ -5,6 +5,7 @@ import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import { cta, microcopy } from "@/content/copy";
 import { cn, formatNumber, formatPhone, formatPrice } from "@/lib/format";
+import { scrollToElement } from "@/lib/smooth-scroll";
 import { useCart } from "@/store/cart-context";
 import { WinkingLogo } from "@/components/brand/WinkingLogo";
 import { FoodImage } from "@/components/ui/FoodImage";
@@ -12,7 +13,11 @@ import { useMenu } from "@/store/menu-context";
 import { BagIcon, PhoneIcon } from "@/components/ui/Icons";
 import { OrderLink } from "@/components/ui/OrderLink";
 
-/** Quiet by design: logo, menu, hotline, cart. The food does the talking. */
+/**
+ * Quiet by design: logo, two links, hotline, cart. The food does the talking.
+ * The logo is where the pepper lives: it winks once after the hero plate lands,
+ * and listens for its single encore (lib/wink).
+ */
 export function Navbar() {
   const { count, subtotal, openCart, addTick, hydrated, lastAddedId } = useCart();
   const { index } = useMenu();
@@ -42,13 +47,24 @@ export function Navbar() {
       >
         <div className="container-site flex h-full items-center gap-3">
           <Link href="/" aria-label={`${siteConfig.name} — الرئيسية`} className="shrink-0">
-            <WinkingLogo preload sizes="(min-width: 1024px) 140px, 112px" className="w-28 lg:w-36" delay={1400} />
+            <WinkingLogo preload listen sizes="(min-width: 1024px) 140px, 112px" className="w-28 lg:w-36" delay={1650} />
           </Link>
 
-          <nav aria-label="الرئيسية" className="ms-4 hidden md:block">
+          <nav aria-label="الرئيسية" className="ms-4 hidden items-center gap-1 md:flex">
             <OrderLink className="rounded-full px-4 py-2 text-[15px] font-bold text-coal/80 hover:bg-coal/5 hover:text-coal">
               المنيو
             </OrderLink>
+            <a
+              href="#extras"
+              onClick={(e) => {
+                const el = document.getElementById("extras");
+                if (!el) return;
+                e.preventDefault();
+                scrollToElement(el, document.documentElement.dataset.motion !== "off");
+              }}
+              className="font-display rounded-full px-4 py-2 text-[15px] font-bold text-chili hover:bg-chili/8">
+              زوّد براحتك
+            </a>
           </nav>
 
           <div className="ms-auto flex items-center gap-2">
@@ -58,7 +74,7 @@ export function Navbar() {
               className="inline-flex h-11 items-center gap-2 rounded-full px-3 text-chili ring-1 ring-chili/25 transition-colors hover:bg-chili hover:text-cream"
             >
               <PhoneIcon size={18} />
-              <span className="font-display hidden text-xl leading-none sm:inline">{formatPhone(hotline)}</span>
+              <span className="hidden text-lg leading-none font-bold sm:inline">{formatPhone(hotline)}</span>
             </a>
 
             <span className="relative">

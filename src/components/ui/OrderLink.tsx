@@ -3,7 +3,7 @@
 import type { ComponentProps } from "react";
 import { ORDER_ANCHOR, openOrder } from "@/lib/order-nav";
 
-/** A link into the tablet's ordering app. Works as a plain anchor without JS. */
+/** A link into the craving menu. Works as a plain anchor without JS. */
 export function OrderLink({
   categoryId,
   onClick,
@@ -15,7 +15,7 @@ export function OrderLink({
       onClick={(e) => {
         onClick?.(e);
         e.preventDefault();
-        openOrder(categoryId);
+        openOrder({ categoryId });
       }}
       {...rest}
     />

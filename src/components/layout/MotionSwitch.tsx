@@ -22,11 +22,7 @@ export function MotionSwitch() {
           type="button"
           role="radio"
           aria-checked={mode === o.mode}
-          onClick={() => {
-            setMotionMode(o.mode);
-            // Scroll scenes swap between moving/still layouts — keep the visitor oriented.
-            if (o.mode === "off" || mode === "off") window.scrollTo({ top: 0 });
-          }}
+          onClick={() => setMotionMode(o.mode)}
           className={cn("h-8 rounded-full px-3 font-bold transition-colors", mode === o.mode ? "bg-cream text-leaf-deep" : "text-cream hover:bg-white/10")}
         >
           {o.label}

@@ -16,7 +16,16 @@ import { QuantityStepper } from "@/components/ui/QuantityStepper";
  * Simple products: tap → flies into the cart, then becomes a stepper.
  * Configurable products: opens the sheet; a badge counts what's in the cart.
  */
-export function AddControl({ product, variant = "pill" }: { product: Product; variant?: "pill" | "round" }) {
+export function AddControl({
+  product,
+  variant = "pill",
+  tone = "chili",
+}: {
+  product: Product;
+  variant?: "pill" | "round";
+  /** "inverse" = cream button for red fields. */
+  tone?: "chili" | "inverse";
+}) {
   const { lines, setQty, qtyOf, hydrated } = useCart();
   const addToCart = useAddToCart();
   const openProduct = useOpenProduct();
@@ -59,8 +68,9 @@ export function AddControl({ product, variant = "pill" }: { product: Product; va
       disabled={!siteConfig.ordering.open}
       aria-label={`${cta.add}: ${product.name}`}
       className={cn(
-        "relative inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-chili font-bold text-cream shadow-cta",
-        "transition-[transform,background-color] duration-200 ease-snap hover:bg-chili-deep active:scale-90 disabled:opacity-45",
+        "relative inline-flex shrink-0 items-center justify-center gap-2 rounded-full font-bold shadow-cta",
+        "transition-[transform,background-color] duration-200 ease-snap active:scale-90 disabled:opacity-45",
+        tone === "inverse" ? "bg-cream text-chili hover:bg-white" : "bg-chili text-cream hover:bg-chili-deep",
         variant === "round" ? "size-11" : "h-12 ps-4 pe-5 text-[16px]",
       )}
     >

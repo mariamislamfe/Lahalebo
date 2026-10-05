@@ -122,8 +122,8 @@ function OrderDone({ order, onClose }: { order: OrderConfirmation; onClose: () =
       <button type="button" onClick={onClose} aria-label="اقفل" className="absolute top-4 left-4 grid size-10 place-items-center rounded-full bg-black/15">
         <CloseIcon />
       </button>
-      {/* The second (and last) place the pepper winks: your order is in. */}
-      <WinkingLogo className="mx-auto mb-5 w-44 -rotate-6" sizes="176px" delay={450} />
+      {/* The pepper's wink budget is spent elsewhere (lib/wink): here it just shows up. */}
+      <WinkingLogo className="mx-auto mb-5 w-44 -rotate-6" sizes="176px" play={false} />
       <p className="font-display text-center text-[3.2rem] leading-none font-extrabold">{microcopy.success}</p>
       <p className="mt-3 text-center text-cream/90">
         رقم طلبك{" "}

@@ -4,9 +4,9 @@ export function formatNumber(value: number): string {
   return numberFmt.format(value);
 }
 
-/** `null` = price not supplied yet. */
+/** `null` = price not supplied (no product has one today; never shown as "soon"). */
 export function formatPrice(value: number | null): string {
-  return value === null ? "السعر قريبًا" : `${numberFmt.format(value)} ج.م`;
+  return value === null ? "اسأل على السعر" : `${numberFmt.format(value)} ج.م`;
 }
 
 /** Hotline in Arabic-Indic digits for display (keep the raw value for tel: links). */
