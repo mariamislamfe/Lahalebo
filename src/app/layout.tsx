@@ -74,7 +74,7 @@ const jsonLd = {
   url: siteConfig.url,
   logo: `${siteConfig.url}${siteConfig.logo.src}`,
   servesCuisine: ["Egyptian", "Koshary"],
-  hasMenu: `${siteConfig.url}/#menu`,
+  hasMenu: `${siteConfig.url}/#order`,
   telephone: siteConfig.contact.hotline,
   sameAs: [siteConfig.social.facebook].filter(Boolean),
   acceptsReservations: false,
