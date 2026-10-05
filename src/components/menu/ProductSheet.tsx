@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef, useState, type ReactNode } from "react";
-import type { Product } from "@/types/menu";
+import Image from "next/image";
+import type { Extra, Product } from "@/types/menu";
 import { cta, microcopy } from "@/content/copy";
 import { siteConfig } from "@/config/site";
 import { useAddToCart } from "@/hooks/useAddToCart";
@@ -73,7 +74,7 @@ function ProductConfigurator({ product, onDone }: { product: Product; onDone: ()
         <div className="space-y-6 px-5 pt-5 pb-6 md:px-7">
           <header>
             <div className="flex items-start justify-between gap-3">
-              <h2 className="font-display text-[2.4rem] leading-none font-extrabold text-coal">{product.name}</h2>
+              <h2 className="font-display text-[2.2rem] leading-tight font-bold text-coal">{product.name}</h2>
               <PriceFlag value={unit} className="mt-2 shrink-0" />
             </div>
             {product.tagline && <p className="font-display mt-1 text-xl font-bold text-chili">{product.tagline}</p>}
@@ -116,7 +117,7 @@ function ProductConfigurator({ product, onDone }: { product: Product; onDone: ()
           )}
 
           {product.choices && product.choices.length > 0 && (
-            <Group label={product.choicesLabel ?? "على مزاجك"} note={<span className="text-[13px] font-bold text-chili">زوّد براحتك</span>}>
+            <Group label={product.choicesLabel ?? "على مزاجك"} note={<span className="text-[13px] font-bold text-leaf">ببلاش</span>}>
               <div className="flex flex-wrap gap-2">
                 {product.choices.map((c) => (
                   <Chip key={c.id} on={choiceIds.includes(c.id)} onToggle={() => toggle(setChoiceIds)(c.id)}>
@@ -128,15 +129,23 @@ function ProductConfigurator({ product, onDone }: { product: Product; onDone: ()
           )}
 
           {product.extras && product.extras.length > 0 && (
-            <Group label="إضافات" note={<span className="text-[12px] text-smoke">اختياري</span>}>
-              <div className="flex flex-wrap gap-2">
-                {product.extras.map((e) => (
-                  <Chip key={e.id} on={extraIds.includes(e.id)} onToggle={() => toggle(setExtraIds)(e.id)} disabled={e.available === false}>
-                    {e.name}
-                    <span className="text-[12px] opacity-75">{e.price === null ? "" : `+ ${formatPrice(e.price)}`}</span>
-                  </Chip>
-                ))}
-              </div>
+            <Group label="زوّد براحتك" note={<span className="text-[12px] text-smoke">اختياري</span>}>
+              {product.extras.every((e) => e.image) ? (
+                <div className="grid grid-cols-3 gap-x-2 gap-y-4 sm:grid-cols-6">
+                  {product.extras.map((e) => (
+                    <ExtraDish key={e.id} extra={e} on={extraIds.includes(e.id)} onToggle={() => toggle(setExtraIds)(e.id)} />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {product.extras.map((e) => (
+                    <Chip key={e.id} on={extraIds.includes(e.id)} onToggle={() => toggle(setExtraIds)(e.id)} disabled={e.available === false}>
+                      {e.name}
+                      <span className="text-[12px] opacity-75">{e.price === null ? "" : `+ ${formatPrice(e.price)}`}</span>
+                    </Chip>
+                  ))}
+                </div>
+              )}
             </Group>
           )}
         </div>
@@ -162,6 +171,47 @@ function Group({ label, note, children }: { label: string; note?: ReactNode; chi
       </legend>
       {children}
     </fieldset>
+  );
+}
+
+/** An add-on as the real thing (bowl / bottle photo), not a checkbox. Tap to reach for it. */
+function ExtraDish({ extra, on, onToggle }: { extra: Extra; on: boolean; onToggle: () => void }) {
+  const img = extra.image!;
+  const bottle = img.height > img.width * 1.5;
+  return (
+    <label
+      className={cn(
+        "group flex cursor-pointer flex-col items-center text-center has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-leaf-bright",
+        extra.available === false && "cursor-not-allowed opacity-40",
+      )}
+    >
+      <input type="checkbox" className="sr-only" checked={on} disabled={extra.available === false} onChange={onToggle} />
+      <span
+        className={cn(
+          "relative flex h-[4.5rem] items-end justify-center transition-transform duration-300 ease-snap group-active:scale-90",
+          on ? "-translate-y-1 -rotate-6" : "group-hover:-rotate-3",
+        )}
+      >
+        <span
+          className={cn(
+            "sticker relative block overflow-hidden bg-cream transition-shadow duration-300",
+            bottle ? "h-full w-8 rounded-t-full rounded-b-lg" : "size-16 rounded-full",
+            on && "outline-3 outline-leaf-bright",
+          )}
+        >
+          <Image src={img.src} alt="" fill sizes="64px" className="object-cover" />
+        </span>
+        {on && (
+          <span className="absolute -top-1 -left-1 grid size-6 animate-bump place-items-center rounded-full bg-leaf text-cream ring-2 ring-cream">
+            <CheckIcon size={13} strokeWidth={3.4} />
+          </span>
+        )}
+      </span>
+      <span className="mt-1.5 text-[13px] leading-tight font-bold">{extra.name}</span>
+      <span className={cn("text-[12px] tabular-nums", on ? "font-bold text-leaf" : "text-smoke")}>
+        {extra.price === null ? "" : `+ ${formatPrice(extra.price)}`}
+      </span>
+    </label>
   );
 }
 

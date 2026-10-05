@@ -9,7 +9,9 @@ import { ProductSheetProvider } from "@/store/product-sheet-context";
 import { ToastProvider } from "@/store/toast-context";
 import { CartBar } from "@/components/cart/CartBar";
 import { CartSheet } from "@/components/cart/CartSheet";
+import { SweetNudge } from "@/components/cart/SweetNudge";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import { RevealObserver } from "@/components/ui/Reveal";
 
 export function AppProviders({ menu, branches, children }: { menu: Menu; branches: Branch[]; children: ReactNode }) {
   return (
@@ -18,7 +20,9 @@ export function AppProviders({ menu, branches, children }: { menu: Menu; branche
         <CartProvider>
           <ProductSheetProvider>
             <SmoothScroll />
+            <RevealObserver />
             {children}
+            <SweetNudge />
             <CartBar />
             <CartSheet />
           </ProductSheetProvider>

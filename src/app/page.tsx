@@ -1,44 +1,46 @@
 import { getBranches, getMenu } from "@/lib/menu-service";
+import { siteConfig } from "@/config/site";
+import { startingPrice } from "@/lib/pricing";
 import { AppProviders } from "@/components/AppProviders";
-import { Extras, Signature } from "@/components/dishes/Dishes";
+import { CondimentStation } from "@/components/extras/CondimentStation";
 import { Hero } from "@/components/hero/Hero";
-import { FinalPepper } from "@/components/sections/FinalPepper";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
-import { TabletPortal } from "@/components/portal/TabletPortal";
+import { CravingMenu } from "@/components/menu/CravingMenu";
+import { ChiliStorm } from "@/components/storm/ChiliStorm";
 import { Branches } from "@/components/sections/Branches";
+import { SweetAndCold } from "@/components/sweet/SweetAndCold";
 
 /**
- * Small signature moments, not one long scroll story:
- * 1. Hero        the koshary hits the screen (+ the pepper winks in the navbar)
- * 2. Signature   the signature plate + «لهاليبو» on fire; its steam walls off the tablet
- * 3. The tablet  the only menu — all ordering happens on its screen
- *                (product sheet + cart with "طب نحلّيها؟" live in AppProviders)
- * 4. Extras      «طب نحلّيها؟» + drinks
- * 5. Final       the pepper's eye follows you
+ * Several small original moments — not one long scroll story
+ * (direction: docs/creative-direction.md):
+ * 1. Hero       «مش عارف تاكل إيه؟» — the photo frame swings in, «إحنا عارفين.» (+ the pepper winks)
+ *    Storm      the chili storm, «زوّد شطة.» — hero → menu
+ * 2. Menu       «نفسك في إيه؟» — categories on the side, dish names on top, one dish at a time
+ * 3. Extras     «زوّد براحتك» — the condiment counter
+ * 4. Sweet/cold «طب نحلّيها؟» turns sideways into «حاجة ساقعة»
+ * The dessert nudge, the product sheet and the cart live in AppProviders.
  * Everything is generated from src/data — add products there, not here.
  */
 export default async function HomePage() {
   const [menu, branches] = await Promise.all([getMenu(), getBranches()]);
-  const byCat = (id: string) => menu.products.filter((p) => p.categoryId === id && p.available);
-  const withPhoto = (list: typeof menu.products) => list.find((p) => p.image) ?? list[0];
 
-  const koshary = withPhoto(byCat("koshary"));
-  const tagen = withPhoto(byCat("tawagen"));
-  const dessert = withPhoto([...byCat("fateer-sweet"), ...byCat("desserts")]);
+  const koshary = menu.products.filter((p) => p.categoryId === "koshary" && p.available);
+  const prices = koshary.map(startingPrice).filter((p): p is number => p !== null);
+  const cravings = menu.categories.filter((c) => c.available && c.id !== "sides" && menu.products.some((p) => p.categoryId === c.id && p.available));
 
   return (
     <AppProviders menu={menu} branches={branches}>
       <a href="#order" className="sr-only z-50 rounded-full bg-coal px-4 py-2 text-cream focus:not-sr-only focus:fixed focus:top-3 focus:right-3">
-        تخطّى للطلب
+        تخطّى للمنيو
       </a>
       <Navbar />
       <main>
-        {koshary && <Hero koshary={koshary} />}
-        <Signature />
-        <TabletPortal tableFood={[koshary, tagen, dessert].filter((p): p is NonNullable<typeof p> => Boolean(p))} />
-        <Extras />
-        <FinalPepper />
+        <Hero plate={siteConfig.heroImage} fromPrice={prices.length ? Math.min(...prices) : null} cravings={cravings} />
+        <ChiliStorm />
+        <CravingMenu />
+        <CondimentStation />
+        <SweetAndCold />
         <Branches branches={branches} />
       </main>
       <Footer />

@@ -44,6 +44,8 @@ export interface Extra {
   name: string;
   price: number | null;
   available?: boolean;
+  /** Real photo crop of the add-on itself (bowl of hummus, bottle of da2a…). */
+  image?: ProductImage;
 }
 
 /** Free preference, e.g. "بصل كتير". */

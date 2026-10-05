@@ -6,6 +6,8 @@ import type { Category, Extra, Menu, Product, ProductImage, ProductOption } from
  * is generated from this file: edit here, nothing else.
  *
  * Photos: real Lahalebo shoots in /public/menu (hd = cut-out, photos = full frame).
+ * Condiments (sides + koshary extras) have no photo yet: they show as plain
+ * circles until the real photos arrive — add `image` to them here.
  * Where a photo is shared between similar dishes it is marked "shared photo".
  * Dishes without a photo show a brand colour poster with the name.
  */
@@ -104,12 +106,13 @@ const item = (id: string, name: string, categoryId: string, p: number | ProductO
 
 /* ---------- categories ---------- */
 
+/** `image` = the dish that swings onto the discovery stage for this craving. */
 export const categories: Category[] = [
-  { id: "koshary", slug: "koshary", name: "كشري", craving: "حاجة تولّع", surface: "orange", sortOrder: 1, available: true },
-  { id: "tawagen", slug: "tawagen", name: "طواجن", craving: "لسه طالعة من الفرن", surface: "red", sortOrder: 2, available: true },
-  { id: "pasta", slug: "pasta", name: "مكرونة", craving: "حاجة تقيلة", surface: "red", sortOrder: 3, available: true },
-  { id: "fateer-salty", slug: "fateer-salty", name: "فطير حادق", craving: "سخن ومقرمش", surface: "orange", sortOrder: 4, available: true },
-  { id: "fateer-sweet", slug: "fateer-sweet", name: "فطير حلو", craving: "حاجة تحلّي", surface: "cream", sortOrder: 5, available: true },
+  { id: "koshary", slug: "koshary", name: "كشري", craving: "حاجة تولّع", surface: "orange", image: img.kosharyPlate, sortOrder: 1, available: true },
+  { id: "tawagen", slug: "tawagen", name: "طواجن", craving: "لسه طالعة من الفرن", surface: "red", image: img.pastaMeat, sortOrder: 2, available: true },
+  { id: "pasta", slug: "pasta", name: "مكرونة", craving: "حاجة تقيلة", surface: "red", image: img.ovenChicken, sortOrder: 3, available: true },
+  { id: "fateer-salty", slug: "fateer-salty", name: "فطير حادق", craving: "سخن ومقرمش", surface: "orange", image: img.fateerCut, sortOrder: 4, available: true },
+  { id: "fateer-sweet", slug: "fateer-sweet", name: "فطير حلو", craving: "حاجة تحلّي", surface: "cream", image: img.trayDubai, sortOrder: 5, available: true },
   { id: "pizza", slug: "pizza", name: "بيتزا", craving: "جبنة بتشد", surface: "red", sortOrder: 6, available: true },
   { id: "desserts", slug: "desserts", name: "حلويات", craving: "ختامها مسك", surface: "cream", sortOrder: 7, available: true },
   { id: "drinks", slug: "drinks", name: "مشروبات", craving: "حاجة ساقعة", surface: "leaf", sortOrder: 8, available: true },

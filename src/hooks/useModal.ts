@@ -29,7 +29,9 @@ export function useModal(open: boolean, panelRef: RefObject<HTMLElement | null>,
     const scrollbar = window.innerWidth - documentElement.clientWidth;
     if (lockCount === 1) {
       lockScroll(true);
-      body.style.overflow = "hidden";
+      // Lock on <html>, never <body>: a body with its own overflow becomes a scroll
+      // container, every sticky element re-anchors to it and the page jumps.
+      documentElement.style.overflow = "hidden";
       if (scrollbar > 0) body.style.paddingInlineEnd = `${scrollbar}px`;
     }
 
@@ -67,7 +69,7 @@ export function useModal(open: boolean, panelRef: RefObject<HTMLElement | null>,
       lockCount--;
       if (lockCount === 0) {
         lockScroll(false);
-        body.style.overflow = "";
+        documentElement.style.overflow = "";
         body.style.paddingInlineEnd = "";
       }
       previouslyFocused?.focus?.({ preventScroll: true });
